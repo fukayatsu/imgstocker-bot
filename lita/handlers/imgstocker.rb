@@ -8,8 +8,8 @@ module Lita
         handler_config.internal_api_key = nil
       end
 
-      route /^save ([a-zA-Z0-9_-]+)$/, :save_icon, command: true
-      route /^set ([a-zA-Z0-9_-]+)$/, :set_icon,  command: true
+      route /^save ([a-zA-Z0-9_-]+)/, :save_icon, command: true
+      route /^set ([a-zA-Z0-9_-]+)/, :set_icon,  command: true
 
       def save_icon(response)
         icon_name = response.matches[0][0]
