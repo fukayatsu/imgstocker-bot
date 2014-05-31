@@ -27,9 +27,9 @@ module Lita
         user_id   = response.user.id
         result    = http_client.put "api/users/#{user_id}", { api_key: config.internal_api_key, icon: icon_name }
         if result.status == 200
-          response.reply "@#{response.user.name} done. [#{Time.now}]"
+          response.reply "@#{response.user.name} #{success_message} [#{Time.now}]"
         else
-          response.reply "@#{response.user.name} failure. [#{Time.now}]"
+          response.reply "@#{response.user.name} #{failure_message} [#{Time.now}]"
         end
       end
 
@@ -44,6 +44,26 @@ module Lita
 
       def config
         Lita.config.handlers.imgstocker
+      end
+
+      def success_message
+        [
+          'りょーかいやで〜',
+          'よっしゃ!やったるわ!',
+          'まかせとき～',
+          'おｋ',
+          '拝承',
+          '了解。',
+          '承知いたしました。',
+        ].sample
+      end
+
+      def failure_message
+        [
+          'いや～、失敗してもた。',
+          'すまんな、なんかうまくいかん。',
+          '失敗したので寝る( ˘ω˘)',
+        ].sample
       end
     end
     Lita.register_handler(Imgstocker)
