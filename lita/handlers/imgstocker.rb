@@ -9,7 +9,8 @@ module Lita
       end
 
       route /^save ([a-zA-Z0-9_-]+)/, :save_icon, command: true
-      route /^set ([a-zA-Z0-9_-]+)/, :set_icon,  command: true
+      route /^set ([a-zA-Z0-9_-]+)/,  :set_icon,  command: true
+      route /^list/,                  :list_icon, command: true
 
       def save_icon(response)
         icon_name = response.matches[0][0]
@@ -28,6 +29,17 @@ module Lita
         result    = http_client.put "api/users/#{user_id}", { api_key: config.internal_api_key, icon: icon_name }
         if result.status == 200
           response.reply "@#{response.user.name} #{success_message} [#{Time.now}]"
+        else
+          response.reply "@#{response.user.name} #{failure_message} [#{Time.now}]"
+        end
+      end
+
+      def list_icon(response)
+        user_id   = response.user.id
+        result    = http_client.get "api/users/#{user_id}/icons", { api_key: config.internal_api_key }
+        if result.status == 200
+          icon_names = JSON.parse(result.body)['icons'].map{ |icon| icon['name'] }
+          response.reply "@#{response.user.name} #{icon_names.join(', ')} [#{Time.now}]"
         else
           response.reply "@#{response.user.name} #{failure_message} [#{Time.now}]"
         end
