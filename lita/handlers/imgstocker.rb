@@ -50,7 +50,7 @@ module Lita
 
           loop do
             break if icon_names.empty?
-            message = response.user.name
+            message = "@#{response.user.name}"
             loop do
               break if icon_names.empty?
               break if message.length + icon_names.first.length > 135
