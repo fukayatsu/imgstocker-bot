@@ -37,11 +37,27 @@ module Lita
       def list_icon(response)
         user_id   = response.user.id
         result    = http_client.get "api/users/#{user_id}/icons", { api_key: config.internal_api_key }
-        if result.status == 200
-          icon_names = JSON.parse(result.body)['icons'].map{ |icon| icon['name'] }
-          response.reply "@#{response.user.name} #{icon_names.join(', ')} [#{Time.now}]"
-        else
+
+        if result.status != 200
           response.reply "@#{response.user.name} #{failure_message} [#{Time.now}]"
+        else
+          icon_names = JSON.parse(result.body)['icons'].map { |icon| icon['name'] }
+
+          if icon_names.empty?
+            response.reply "@#{response.user.name} まだ登録されてへんで"
+            return
+          end
+
+          loop do
+            break if icon_names.empty?
+            message = response.user.name
+            loop do
+              break if icon_names.empty?
+              break if message.length + icon_names.first.length > 135
+              message += " #{icon_names.shift}"
+            end
+            response.reply message
+          end
         end
       end
 
