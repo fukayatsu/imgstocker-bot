@@ -17,9 +17,9 @@ module Lita
         user_id   = response.user.id
         result    = http_client.post "api/users/#{user_id}/icons", { api_key: config.internal_api_key, name: icon_name }
         if result.status == 200
-          response.reply "@#{response.user.name} done. [#{Time.now}]"
+          response.reply "@#{response.user.name} done. #{timestamp}"
         else
-          response.reply "@#{response.user.name} failure. [#{Time.now}]"
+          response.reply "@#{response.user.name} failure. #{timestamp}"
         end
       end
 
@@ -28,9 +28,9 @@ module Lita
         user_id   = response.user.id
         result    = http_client.put "api/users/#{user_id}", { api_key: config.internal_api_key, icon: icon_name }
         if result.status == 200
-          response.reply "@#{response.user.name} #{success_message} [#{Time.now}]"
+          response.reply "@#{response.user.name} #{success_message} #{timestamp}"
         else
-          response.reply "@#{response.user.name} #{failure_message} [#{Time.now}]"
+          response.reply "@#{response.user.name} #{failure_message} #{timestamp}"
         end
       end
 
@@ -39,7 +39,7 @@ module Lita
         result    = http_client.get "api/users/#{user_id}/icons", { api_key: config.internal_api_key }
 
         if result.status != 200
-          response.reply "@#{response.user.name} #{failure_message} [#{Time.now}]"
+          response.reply "@#{response.user.name} #{failure_message} #{timestamp}"
         else
           icon_names = JSON.parse(result.body)['icons'].map { |icon| icon['name'] }
 
@@ -53,15 +53,21 @@ module Lita
             message = "@#{response.user.name}"
             loop do
               break if icon_names.empty?
-              break if message.length + icon_names.first.length > 135
+              break if message.length + icon_names.first.length > 130
               message += " #{icon_names.shift}"
             end
-            response.reply message
+            response.reply "#{message} #{timestamp}"
           end
         end
       end
 
       private
+
+      def timestamp
+        # [21:07]
+        Time.now.strftime('[%M:%S]')
+      end
+
       def http_client
         @conn ||= Faraday.new(url: 'https://imgstocker.herokuapp.com') do |faraday|
           faraday.request  :url_encoded             # form-encode POST params
